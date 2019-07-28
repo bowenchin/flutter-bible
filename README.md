@@ -10,4 +10,6 @@ For help getting started with Flutter, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Latest Branch
+Stay on `master` branch stable app
+
 Checkout branch `feature/popupVerseViewer` for latest commits
