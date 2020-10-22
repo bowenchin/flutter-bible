@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:bible_bloc/Blocs/notes_bloc.dart';
-import 'package:bible_bloc/Provider/INotesProvider.dart';
+import 'package:bible_bloc/Providers/INotesProvider.dart';
 import 'package:intl/intl.dart';
 import 'package:notus/notus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class NotesProvider extends INotesProvider {
-  List<Note> _notes = List<Note>();
   @override
   Future<List<Note>> getNotes() async {
     List<Note> notes = List<Note>();
@@ -52,10 +51,10 @@ class NotesProvider extends INotesProvider {
   Future saveNotes(List<Note> notes) async {
     final directory = await getApplicationDocumentsDirectory();
     for (var note in notes) {
-      var formatter = new DateFormat('yyyy-MM-dd');
+      var formatter = DateFormat('yyyy-MM-dd');
       String formatted = formatter.format(note.lastUpdated);
       var file = File(
-          '${directory.path}/notes/${note.id}_${note.title}_${formatted}.txt');
+          '${directory.path}/notes/${note.id}_${note.title}_$formatted.txt');
       var existingPath = await _getFilePathWithId(note.id);
       if (existingPath.isEmpty) {
         file = await file.create(recursive: true);

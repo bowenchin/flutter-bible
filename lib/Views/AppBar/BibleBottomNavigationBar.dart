@@ -1,12 +1,11 @@
 import 'package:bible_bloc/Blocs/navigation_bloc.dart';
 import 'package:bible_bloc/InheritedBlocs.dart';
-import 'package:bible_bloc/Views/BookDrawer/BookDrawer.dart';
+import 'package:bible_bloc/Views/BookDrawer/BooksList.dart';
 import 'package:bible_bloc/Views/SearchPage/BibleSearchDelegate.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class BibleBottomNavigationBar extends StatelessWidget {
-  int lastPage = 10;
   BibleBottomNavigationBar({
     Key key,
     BuildContext context,
@@ -18,7 +17,7 @@ class BibleBottomNavigationBar extends StatelessWidget {
         stream: InheritedBlocs.of(context).navigationBloc.currentPage,
         initialData: AppPage.readerPage,
         builder: (context, snapshot) {
-          lastPage = snapshot.data.index;
+          int lastPage = snapshot.data.index;
           return Theme(
             data: Theme.of(context).copyWith(
               // sets the background color of the `BottomNavigationBar`
@@ -37,6 +36,9 @@ class BibleBottomNavigationBar extends StatelessWidget {
                             return Container(child: BooksList());
                           });
                     } else {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
                       InheritedBlocs.of(context)
                           .navigationBloc
                           .nextPage
@@ -45,16 +47,33 @@ class BibleBottomNavigationBar extends StatelessWidget {
 
                     break;
                   case 1:
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
                     InheritedBlocs.of(context)
                         .navigationBloc
                         .nextPage
                         .add(AppPage.notesPage);
                     break;
                   case 2:
-                    showSearch(
-                      context: context,
-                      delegate: BibleSearchDelegate(),
-                    );
+                    if (lastPage == index) {
+                    } else {
+                      InheritedBlocs.of(context)
+                          .navigationBloc
+                          .nextPage
+                          .add(AppPage.searchPage);
+                      showSearch(
+                        context: context,
+                        delegate: BibleSearchDelegate(),
+                      );
+                    }
+
+                    break;
+                  case 3:
+                    InheritedBlocs.of(context)
+                        .navigationBloc
+                        .nextPage
+                        .add(AppPage.historyPage);
                     break;
                   default:
                 }
@@ -69,9 +88,13 @@ class BibleBottomNavigationBar extends StatelessWidget {
                   icon: Icon(MdiIcons.notebook),
                 ),
                 /* BottomNavigationBarItem(
-                title: Text("Search"),
-                icon: Icon(Icons.search),
-              ), */
+                  title: Text("Search"),
+                  icon: Icon(Icons.search),
+                ),
+                 BottomNavigationBarItem(
+                  title: Text("History"),
+                  icon: Icon(Icons.history),
+                ), */
               ],
             ),
           );

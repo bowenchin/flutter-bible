@@ -2,19 +2,20 @@ import 'package:bible_bloc/Models/Book.dart';
 import 'package:bible_bloc/Models/Chapter.dart';
 import 'package:bible_bloc/Models/ChapterElements/Verse.dart';
 
-import 'package:bible_bloc/Provider/IBibleProvider.dart';
+import 'package:bible_bloc/Providers/IBibleProvider.dart';
+import 'package:bible_bloc/Providers/ISearchProvider.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:xml/xml.dart' as xml;
 
-class XmlBibleProvider extends IBibleProvider {
+class XmlBibleProvider extends IBibleProvider implements ISearchProvider {
   xml.XmlDocument xmlDocument;
   GlobalConfiguration _cfg;
 
   List<Book> _searchableBooks;
 
   XmlBibleProvider() {
-    _cfg = new GlobalConfiguration();
+    _cfg = GlobalConfiguration();
   }
   Future init() async {
     var path = _cfg.getString("xmlBiblePath");
@@ -29,7 +30,7 @@ class XmlBibleProvider extends IBibleProvider {
 
   Future<List<Book>> getAllBooks() async {
     var xmlBooks = xmlDocument.findAllElements("b");
-    var books = new List<Book>();
+    var books = List<Book>();
     for (var item in xmlBooks) {
       var book = _convertBookFromXml(item);
       books.add(book);
@@ -38,15 +39,14 @@ class XmlBibleProvider extends IBibleProvider {
   }
 
   Book _convertBookFromXml(xml.XmlElement item) {
-    var book = new Book(
+    var book = Book(
       name: item.getAttribute("n"),
-      chapters: _getChapters(item),
     );
-    book.chapters.forEach((c) => c.book = book);
+    book.chapters = _getChapters(item, book);
     return book;
   }
 
-  Book getBook(String name) {
+  Book _getBook(String name) {
     var xmlBooks = xmlDocument.findAllElements("b");
     var xmlBook = xmlBooks.firstWhere((n) => n.getAttribute("n") == name);
     var book = _convertBookFromXml(xmlBook);
@@ -54,30 +54,34 @@ class XmlBibleProvider extends IBibleProvider {
   }
 
   Future<Chapter> getChapter(String bookName, int chapterNumber) async {
-    return this.getBook(bookName).chapters[chapterNumber - 1];
+    return this._getBook(bookName).chapters[chapterNumber - 1];
   }
 
-  List<Chapter> _getChapters(xml.XmlElement xmlBook) {
+  List<Chapter> _getChapters(xml.XmlElement xmlBook, Book book) {
     var xmlChapters = xmlBook.findAllElements("c");
-    List<Chapter> chapters = new List<Chapter>();
+    List<Chapter> chapters = List<Chapter>();
     for (var item in xmlChapters) {
-      var chapter = new Chapter(
-          number: int.parse(item.getAttribute("n")),
-          elements: this._getVerses(item));
-      chapter.elements.forEach((v) => v.chapter = chapter);
+      var chapter = Chapter(
+        number: int.parse(item.getAttribute("n")),
+        book: book,
+      );
+
+      chapter.elements = this._getVerses(item, chapter);
+
       chapters.add(chapter);
     }
 
     return chapters;
   }
 
-  List<Verse> _getVerses(xml.XmlElement xmlChapter) {
+  List<Verse> _getVerses(xml.XmlElement xmlChapter, Chapter chapter) {
     var xmlVerses = xmlChapter.findAllElements("v");
-    List<Verse> verses = new List<Verse>();
+    List<Verse> verses = List<Verse>();
     for (var item in xmlVerses) {
-      var verse = new Verse(
+      var verse = Verse(
         number: int.parse(item.getAttribute("n")),
         text: item.text,
+        chapter: chapter,
       );
       verses.add(verse);
     }
@@ -85,10 +89,12 @@ class XmlBibleProvider extends IBibleProvider {
   }
 
   Future<List<Verse>> getSearchResults(
-      String searchTerm, List<Book> booksToSearch) async {
-    var books = this
-        ._searchableBooks
-        .where((b) => booksToSearch.any((book) => book.name == b.name));
+      String searchTerm, List<String> booksToSearch) async {
+    var books = booksToSearch.isNotEmpty
+        ? this._searchableBooks.where((b) => booksToSearch
+            .any((book) => book.toLowerCase() == b.name.toLowerCase()))
+        : this._searchableBooks;
+
     var chapters = books.expand((book) => book.chapters);
 
     var verses = chapters.expand((c) => c.elements.whereType<Verse>());
@@ -140,11 +146,5 @@ class XmlBibleProvider extends IBibleProvider {
 
     // Nothing found.
     return false;
-  }
-
-  @override
-  Future<Chapter> getChapterById(int chapterId) async {
-    // TODO: implement getChapterById
-    return null;
   }
 }

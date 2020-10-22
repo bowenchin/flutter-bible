@@ -4,10 +4,9 @@ import 'package:bible_bloc/InheritedBlocs.dart';
 import 'package:bible_bloc/Models/Chapter.dart';
 import 'package:bible_bloc/Models/ChapterElements/Verse.dart';
 import 'package:bible_bloc/Models/SearchQuery.dart';
-
+import 'package:bible_bloc/Views/LoadingColumn.dart';
 import 'package:bible_bloc/Views/SearchPage/SearchFilter.dart';
 import 'package:bible_bloc/Views/SearchPage/SearchResults.dart';
-import 'package:bible_bloc/main.dart';
 import 'package:flutter/material.dart';
 import 'package:queries/collections.dart';
 
@@ -38,6 +37,9 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
   Widget buildResults(BuildContext context) {
     return Scaffold(
       body: searchResultsBody(context: context),
+      /* bottomNavigationBar: BibleBottomNavigationBar(
+        context: context,
+      ), */
     );
   }
 
@@ -61,20 +63,21 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
       );
     }
     InheritedBlocs.of(context)
-        .bibleBloc
+        .searchBloc
         .searchTerm
         .add(SearchQuery(queryText: query, book: ""));
 
     InheritedBlocs.of(context)
-        .bibleBloc
+        .searchBloc
         .suggestionSearchTerm
         .add(SearchQuery(queryText: query, book: ""));
 
     return Column(
       children: <Widget>[
         StreamBuilder<UnmodifiableListView<Verse>>(
-          stream:
-              InheritedBlocs.of(context).bibleBloc.suggestionSearchearchResults,
+          stream: InheritedBlocs.of(context)
+              .searchBloc
+              .suggestionSearchearchResults,
           initialData: UnmodifiableListView([]),
           builder: (BuildContext context,
               AsyncSnapshot<UnmodifiableListView<Verse>> snapshot) {
@@ -86,12 +89,12 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
                 .toList();
             return Padding(
               padding: const EdgeInsets.fromLTRB(17.0, 0.0, 17.0, 0.0),
-              child: new SearchFilter(query: query, books: books),
+              child: SearchFilter(query: query, books: books),
             );
           },
         ),
         StreamBuilder<UnmodifiableListView<Verse>>(
-          stream: InheritedBlocs.of(context).bibleBloc.searchResults,
+          stream: InheritedBlocs.of(context).searchBloc.searchResults,
           builder: (BuildContext context,
               AsyncSnapshot<UnmodifiableListView<Verse>> snapshot) {
             if (!snapshot.hasData || snapshot.data.length == 0) {
@@ -123,7 +126,7 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
         ),
         Divider(),
         StreamBuilder(
-          stream: InheritedBlocs.of(context).bibleBloc.searchResults,
+          stream: InheritedBlocs.of(context).searchBloc.searchResults,
           builder:
               (context, AsyncSnapshot<UnmodifiableListView<Verse>> snapshot) {
             if (!snapshot.hasData) {
@@ -142,7 +145,7 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
               );
             } else {
               final results = snapshot.data;
-              return new SearchResults(results: results);
+              return SearchResults(results: results);
             }
           },
         ),
@@ -154,7 +157,9 @@ class BibleSearchDelegate extends SearchDelegate<Chapter> {
   Widget buildSuggestions(BuildContext context) {
     return Scaffold(
       body: Column(),
-      //bottomNavigationBar: BibleBottomNavigationBar(),
+      /* bottomNavigationBar: BibleBottomNavigationBar(
+        context: context,
+      ), */
     );
   }
 }

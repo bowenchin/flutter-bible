@@ -1,7 +1,5 @@
-import 'package:bible_bloc/InheritedBlocs.dart';
 import 'package:bible_bloc/Models/Chapter.dart';
 import 'package:bible_bloc/Models/ChapterElements/IChapterElement.dart';
-
 import 'package:flutter/material.dart';
 
 class Verse extends IChapterElement {
@@ -10,13 +8,13 @@ class Verse extends IChapterElement {
   final int number;
   Chapter chapter;
 
-  Verse({this.number, this.text}) : super();
+  Verse({this.number, this.text, this.chapter}) : super(chapter: chapter);
 
   @override
   List<Text> toTextWidget(BuildContext context) {
     List<Text> span = [
       Text(''' ${this.number} ${this.text}''',
-          style: new TextStyle(fontWeight: FontWeight.bold)),
+          style: TextStyle(fontWeight: FontWeight.bold)),
     ];
     for (var verseElement in this.elements) {
       span.addAll(verseElement.toTextWidget(context));
@@ -29,7 +27,7 @@ class Verse extends IChapterElement {
     TextSpan span = TextSpan(children: [
       TextSpan(
         text: ''' ${this.number}.''',
-        style: new TextStyle(
+        style: TextStyle(
           fontWeight: FontWeight.w400,
         ),
       ),

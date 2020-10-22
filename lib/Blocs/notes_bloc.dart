@@ -1,22 +1,22 @@
 import 'dart:async';
 
-import 'package:bible_bloc/Provider/INotesProvider.dart';
-import 'package:bible_bloc/Provider/NotesProvider.dart';
+import 'package:bible_bloc/Providers/INotesProvider.dart';
+import 'package:bible_bloc/Providers/NotesProvider.dart';
 import 'package:notus/notus.dart';
 import 'package:queries/collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 class NotesBloc {
-  INotesProvider _notesProvider = new NotesProvider();
+  INotesProvider _notesProvider = NotesProvider();
 
   Sink<Note> get addUpdateNote => _addNoteController.sink;
   final _addNoteController = StreamController<Note>();
 
   Stream<List<Note>> get savedNotes => _notes.stream;
-  final _notes = BehaviorSubject<List<Note>>(seedValue: List<Note>());
+  final _notes = BehaviorSubject<List<Note>>.seeded(List<Note>());
 
   Stream<int> get highestNoteId => _highestNoteId.stream;
-  final _highestNoteId = BehaviorSubject<int>(seedValue: 0);
+  final _highestNoteId = BehaviorSubject<int>.seeded(0);
 
   NotesBloc() {
     loadInitialNotes();

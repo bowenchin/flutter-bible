@@ -1,16 +1,16 @@
 import 'package:bible_bloc/Models/ChapterElements/IChapterElement.dart';
 import 'package:flutter/material.dart';
 
-class ChaperText extends IChapterElement {
+class ChapterText extends IChapterElement {
   final String text;
-  ChaperText({this.text}) : super();
+  ChapterText({this.text}) : super();
 
   @override
   List<Text> toTextWidget(BuildContext context) {
     return [
       Text(
         ''' ${this.text.trim()} ''',
-        style: new TextStyle(fontWeight: FontWeight.normal),
+        style: TextStyle(fontWeight: FontWeight.normal),
       ),
     ];
   }
