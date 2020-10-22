@@ -10,7 +10,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.1.2-dev.0.0 <3.0.0"
 
 dependencies:
   path_provider: any
@@ -34,9 +34,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  faker: ^1.0.0  
-  flutter_launcher_icons: "^0.7.0"
-  mockito: "^4.0.0"
+  faker: ^1.1.0
+  flutter_launcher_icons: ^0.7.2+1
+  mockito: ^4.1.0
   
 flutter_icons:
   android: true 
