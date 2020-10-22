@@ -13,17 +13,17 @@ environment:
   sdk: ">=2.1.2-dev.0.0 <3.0.0"
 
 dependencies:
-  path_provider: ^1.2.0
-  queries: ^0.1.12
-  xml: ^3.5.0
-  rxdart: ^0.22.1
-  global_configuration: ^1.2.0
-  shared_preferences: ^0.5.3+4 
-  flutter_slidable: ^0.4.9
-  after_layout: ^1.0.7+2
+  path_provider: any
+  queries: any
+  xml: any
+  rxdart: ^0.23.1
+  global_configuration: any
+  shared_preferences: any
+  flutter_slidable: any
+  after_layout: any
   intl: any  
-  zefyr: ^0.6.0
-  material_design_icons_flutter: ^3.2.3895 
+  #zefyr: ^0.5.0
+  material_design_icons_flutter: ^3.2.3595 
   flutter:
     sdk: flutter
 
@@ -52,6 +52,7 @@ flutter:
     #- resources/BibleDb.db
     - resources/esv.xml
     - resources/xml/
+    - resources/raw/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
